@@ -1,0 +1,167 @@
+openapi: 3.0.1
+info:
+  title: API V1
+  version: v1
+servers:
+  - url: http://localhost:3000
+tags:
+  - name: Authentication
+  - name: Items
+  - name: Orders
+  - name: Users
+paths:
+  /users:
+    post:
+      tags:
+        - Authentication
+      summary: Register a new user
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                user:
+                  type: object
+                  properties:
+                    email:
+                      type: string
+                    password:
+                      type: string
+                    password_confirmation:
+                      type: string
+                    first_name:
+                      type: string
+                    last_name:
+                      type: string
+      responses:
+        '201':
+          description: User created
+    get:
+      tags:
+        - Users
+      summary: List all users (Admin only)
+      responses:
+        '200':
+          description: List of users
+  
+  /users/sign_in:
+    post:
+      tags:
+        - Authentication
+      summary: Login
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                user:
+                  type: object
+                  properties:
+                    email:
+                      type: string
+                    password:
+                      type: string
+      responses:
+        '200':
+          description: Logged in successfully
+  
+  /users/sign_out:
+    delete:
+      tags:
+        - Authentication
+      summary: Logout
+      responses:
+        '204':
+          description: Logged out successfully
+
+  /items:
+    get:
+      tags:
+        - Items
+      summary: List items
+      parameters:
+        - name: search
+          in: query
+          schema:
+            type: string
+      responses:
+        '200':
+          description: List of items
+    post:
+      tags:
+        - Items
+      summary: Create item (Admin only)
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                item:
+                  type: object
+                  properties:
+                    name: {type: string}
+                    description: {type: string}
+                    price: {type: number}
+      responses:
+        '201':
+          description: Item created
+  
+  /orders:
+    get:
+      tags:
+        - Orders
+      summary: List current user's orders
+      responses:
+        '200':
+          description: List of orders
+    post:
+      tags:
+        - Orders
+      summary: Create an order
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                order:
+                  type: object
+                  properties:
+                    items:
+                      type: array
+                      items:
+                        type: object
+                        properties:
+                          id: {type: integer}
+                          quantity: {type: integer}
+      responses:
+        '201':
+          description: Order created
+
+  /users/{id}:
+    patch:
+      tags:
+        - Users
+      summary: Update user role (Admin only)
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                user:
+                  type: object
+                  properties:
+                    role: {type: string}
+      responses:
+        '200':
+          description: User updated

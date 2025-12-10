@@ -1,0 +1,32 @@
+# General
+.DS_Store
+.idea
+.vscode
+*.gem
+
+# Rails (Backend)
+backend/log/*
+backend/tmp/*
+backend/public/system
+backend/public/assets
+backend/storage/*
+backend/config/master.key
+backend/config/credentials.yml.enc
+backend/db/*.sqlite3
+backend/db/*.sqlite3-journal
+backend/.env
+backend/.env.*
+
+# Node (Frontend)
+frontend/node_modules/
+frontend/dist/
+frontend/.env
+frontend/.env.local
+frontend/.env.*.local
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# Artifacts/Documentation (Optional - keeping them for now as they are part of the delivery)
+# .gemini/ 

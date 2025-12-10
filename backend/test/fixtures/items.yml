@@ -1,0 +1,15 @@
+# Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  name: Test Item 1
+  description: Description of item 1
+  price: 19.99
+  created_at: <%= Time.now %>
+  updated_at: <%= Time.now %>
+
+two:
+  name: Test Item 2
+  description: Description of item 2
+  price: 29.99
+  created_at: <%= Time.now %>
+  updated_at: <%= Time.now %>
