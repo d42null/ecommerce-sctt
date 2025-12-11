@@ -32,8 +32,8 @@ module Backend
     # Enable Session and Cookies for Devise
     config.session_store :cookie_store,
       key: '_interslice_session',
-      same_site: :none,
-      secure: true
+      same_site: (Rails.env.production? ? :none : :lax),
+      secure: Rails.env.production?
     config.middleware.use ActionDispatch::Cookies
     config.middleware.use config.session_store, config.session_options
   end
