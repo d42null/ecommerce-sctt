@@ -4,7 +4,7 @@ class ItemsController < ApplicationController
 
   def index
     page = (params[:page] || 1).to_i
-    per_page = 4
+    per_page = 6
     
     if params[:q].present?
       query = Item.where("name ILIKE ?", "%#{params[:q]}%")
