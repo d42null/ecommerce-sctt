@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import api from '../api/client';
-import { useCart } from '../context/CartContext';
+import { useDispatch } from 'react-redux';
+import { addToCart } from '../store/slices/cartSlice';
 import { Search, Plus, ChevronLeft, ChevronRight } from 'lucide-react';
 import toast from 'react-hot-toast';
 
@@ -10,7 +11,7 @@ export default function Products() {
   const [searchQuery, setSearchQuery] = useState('');
   const [page, setPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
-  const { addToCart } = useCart();
+  const dispatch = useDispatch();
   const [quantities, setQuantities] = useState({});
 
   useEffect(() => {
@@ -48,7 +49,7 @@ export default function Products() {
 
   const handleAddToCart = (item) => {
     const qty = quantities[item.id] || 1;
-    addToCart(item, qty);
+    dispatch(addToCart({ item, quantity: qty }));
     setQuantities(prev => ({ ...prev, [item.id]: 1 })); // Reset to 1
     toast.success(`Added ${qty} ${item.name}(s) to cart`);
   };

@@ -1,12 +1,19 @@
 import { Link, useNavigate } from 'react-router-dom';
-import { useAuth } from '../context/AuthContext';
-import { useCart } from '../context/CartContext';
+import { useDispatch, useSelector } from 'react-redux';
+import { logoutUser } from '../store/slices/authSlice';
+import { selectCartTotalItems } from '../store/slices/cartSlice';
 import { ShoppingCart, User, LogOut } from 'lucide-react';
 
 export default function Navbar() {
-  const { user, logout } = useAuth();
-  const { totalItems } = useCart();
+  const dispatch = useDispatch();
+  const { user } = useSelector(state => state.auth);
+  const totalItems = useSelector(selectCartTotalItems);
   const navigate = useNavigate();
+
+  const handleLogout = () => {
+    dispatch(logoutUser());
+    navigate('/login');
+  };
 
   return (
     <nav className="bg-white shadow-md">
@@ -36,7 +43,7 @@ export default function Navbar() {
                     </span>
                   )}
                 </Link>
-                <button onClick={logout} className="text-gray-700 hover:text-red-600">
+                <button onClick={handleLogout} className="text-gray-700 hover:text-red-600">
                   <LogOut className="h-6 w-6" />
                 </button>
               </div>

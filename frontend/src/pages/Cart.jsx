@@ -1,11 +1,13 @@
-import { useCart } from '../context/CartContext';
+import { useDispatch, useSelector } from 'react-redux';
+import { selectCartItems, removeFromCart, clearCart } from '../store/slices/cartSlice';
 import { useNavigate, Link } from 'react-router-dom';
 import api from '../api/client';
 import { Trash2 } from 'lucide-react';
 import toast from 'react-hot-toast';
 
 export default function Cart() {
-  const { cartItems, removeFromCart, clearCart } = useCart();
+  const dispatch = useDispatch();
+  const cartItems = useSelector(selectCartItems);
   const navigate = useNavigate();
 
   const totalAmount = cartItems.reduce((acc, item) => acc + (parseFloat(item.price) * item.quantity), 0);
@@ -22,7 +24,7 @@ export default function Cart() {
       };
 
       await api.post('/orders', payload);
-      clearCart();
+      dispatch(clearCart());
       toast.success('Order placed successfully!');
       navigate('/orders');
     } catch (error) {
@@ -62,7 +64,7 @@ export default function Cart() {
                     ${(parseFloat(item.price) * item.quantity).toFixed(2)}
                  </span>
                  <button 
-                   onClick={() => removeFromCart(item.id)}
+                   onClick={() => dispatch(removeFromCart(item.id))}
                    className="text-red-600 hover:text-red-900"
                  >
                    <Trash2 className="h-5 w-5" />

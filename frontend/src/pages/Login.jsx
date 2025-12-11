@@ -1,11 +1,12 @@
 import { useState } from 'react';
-import { useAuth } from '../context/AuthContext';
+import { useDispatch } from 'react-redux';
+import { loginUser } from '../store/slices/authSlice';
 import { useNavigate, Link } from 'react-router-dom';
 
 export default function Login() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const { login } = useAuth();
+  const dispatch = useDispatch();
   const navigate = useNavigate();
   const [error, setError] = useState('');
 
@@ -13,10 +14,10 @@ export default function Login() {
     e.preventDefault();
     try {
       if (!email || !password) return setError("Please fill in all fields");
-      await login(email, password);
+      await dispatch(loginUser({ email, password })).unwrap();
       navigate('/');
     } catch (err) {
-      setError('Invalid email or password');
+      setError(typeof err === 'string' ? err : 'Invalid email or password');
     }
   };
 

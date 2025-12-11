@@ -1,5 +1,6 @@
 import { useState } from 'react';
-import { useAuth } from '../context/AuthContext';
+import { useDispatch } from 'react-redux';
+import { registerUser } from '../store/slices/authSlice';
 import { useNavigate, Link } from 'react-router-dom';
 
 export default function Register() {
@@ -7,7 +8,7 @@ export default function Register() {
   const [password, setPassword] = useState('');
   const [firstName, setFirstName] = useState('');
   const [lastName, setLastName] = useState('');
-  const { register } = useAuth();
+  const dispatch = useDispatch();
   const navigate = useNavigate();
   const [error, setError] = useState('');
 
@@ -15,16 +16,16 @@ export default function Register() {
     e.preventDefault();
     try {
       if (!email || !password || !firstName || !lastName) return setError("All fields are required");
-      await register(email, password, firstName, lastName);
+      await dispatch(registerUser({ email, password, firstName, lastName })).unwrap();
       navigate('/');
     } catch (err) {
       console.error(err);
-      if (err.response && err.response.data && err.response.data.errors) {
-         // Devise returns errors object
-         const messages = Object.values(err.response.data.errors).flat().join(', ');
+      if (err.errors) {
+         // Thunk returns error data directly
+         const messages = Object.values(err.errors).flat().join(', ');
          setError(messages);
       } else {
-         setError(err.message || 'Registration failed. Please try again.');
+         setError(typeof err === 'string' ? err : 'Registration failed');
       }
     }
   };
