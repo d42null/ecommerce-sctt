@@ -1,26 +1,37 @@
 import { useState, useEffect } from 'react';
 import api from '../api/client';
 import { useCart } from '../context/CartContext';
-import { Search, Plus } from 'lucide-react';
+import { Search, Plus, ChevronLeft, ChevronRight } from 'lucide-react';
 import toast from 'react-hot-toast';
 
 export default function Products() {
   const [items, setItems] = useState([]);
   const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState('');
+  const [page, setPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
   const { addToCart } = useCart();
   const [quantities, setQuantities] = useState({});
 
   useEffect(() => {
-    fetchItems();
+    setPage(1); // Reset to page 1 on new search
   }, [searchQuery]);
+
+  useEffect(() => {
+    fetchItems();
+  }, [searchQuery, page]);
 
   const fetchItems = async () => {
     try {
       setLoading(true);
-      const url = searchQuery ? `/items?q=${searchQuery}` : '/items';
+      const url = searchQuery
+        ? `/items?q=${searchQuery}&page=${page}`
+        : `/items?page=${page}`;
       const response = await api.get(url);
       setItems(response.data);
+      if (response.headers['total-pages']) {
+        setTotalPages(parseInt(response.headers['total-pages'], 10));
+      }
     } catch (error) {
       console.error("Failed to fetch items", error);
     } finally {
@@ -98,6 +109,29 @@ export default function Products() {
       )}
       {!loading && items.length === 0 && (
         <div className="text-center py-10 text-gray-500">No products found.</div>
+      )}
+
+      {/* Pagination Controls */}
+      {!loading && items.length > 0 && totalPages > 1 && (
+        <div className="mt-8 flex justify-center items-center space-x-4">
+          <button
+            onClick={() => setPage(p => Math.max(1, p - 1))}
+            disabled={page === 1}
+            className={`p-2 rounded-full border ${page === 1 ? 'border-gray-200 text-gray-300' : 'border-gray-300 text-gray-600 hover:bg-gray-50'}`}
+          >
+            <ChevronLeft className="h-5 w-5" />
+          </button>
+          <span className="text-sm text-gray-700">
+            Page <span className="font-medium">{page}</span> of <span className="font-medium">{totalPages}</span>
+          </span>
+          <button
+            onClick={() => setPage(p => Math.min(totalPages, p + 1))}
+            disabled={page === totalPages}
+            className={`p-2 rounded-full border ${page === totalPages ? 'border-gray-200 text-gray-300' : 'border-gray-300 text-gray-600 hover:bg-gray-50'}`}
+          >
+            <ChevronRight className="h-5 w-5" />
+          </button>
+        </div>
       )}
     </div>
   );
