@@ -4,10 +4,12 @@ class ItemsController < ApplicationController
 
   def index
     if params[:q].present?
-      @items = Item.where("name ILIKE ?", "%#{params[:q]}%")
+      @pagy, @items = pagy(Item.where("name ILIKE ?", "%#{params[:q]}%"))
     else
-      @items = Item.all
+      @pagy, @items = pagy(Item.all)
     end
+    
+    pagy_headers_merge(@pagy)
     render json: @items
   end
 
