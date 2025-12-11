@@ -1,0 +1,49 @@
+name: CI
+
+on:
+  push:
+    branches: [ "master" ]
+  pull_request:
+    branches: [ "master" ]
+
+jobs:
+  backend-test:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ./backend
+    services:
+      postgres:
+        image: postgres:15
+        ports:
+          - 5432:5432
+        env:
+          POSTGRES_DB: rails_test
+          POSTGRES_USER: rails
+          POSTGRES_PASSWORD: password
+    env:
+      RAILS_ENV: test
+      DATABASE_URL: "postgres://rails:password@localhost:5432/rails_test"
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Ruby
+        uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: 3.2.0
+          bundler-cache: true # runs 'bundle install' and caches installed gems automatically
+          working-directory: ./backend
+
+      - name: Setup Database
+        run: bin/rails db:prepare
+
+      - name: Run Tests
+        run: bin/rails test
+
+      - name: Security Audit (Brakeman)
+        run: bin/brakeman -q -w2
+
+      - name: Linting (RuboCop)
+        run: bin/rubocop --parallel
