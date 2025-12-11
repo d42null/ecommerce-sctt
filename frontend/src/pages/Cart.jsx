@@ -2,6 +2,7 @@ import { useCart } from '../context/CartContext';
 import { useNavigate, Link } from 'react-router-dom';
 import api from '../api/client';
 import { Trash2 } from 'lucide-react';
+import toast from 'react-hot-toast';
 
 export default function Cart() {
   const { cartItems, removeFromCart, clearCart } = useCart();
@@ -22,11 +23,11 @@ export default function Cart() {
 
       await api.post('/orders', payload);
       clearCart();
-      alert('Order placed successfully!');
+      toast.success('Order placed successfully!');
       navigate('/orders');
     } catch (error) {
       console.error("Checkout failed", error);
-      alert('Checkout failed. Please try again.');
+      toast.error('Checkout failed. Please try again.');
     }
   };
 

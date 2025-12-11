@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import api from '../api/client';
 import { useCart } from '../context/CartContext';
 import { Search, Plus } from 'lucide-react';
+import toast from 'react-hot-toast';
 
 export default function Products() {
   const [items, setItems] = useState([]);
@@ -38,7 +39,7 @@ export default function Products() {
     const qty = quantities[item.id] || 1;
     addToCart(item, qty);
     setQuantities(prev => ({ ...prev, [item.id]: 1 })); // Reset to 1
-    alert(`Added ${qty} ${item.name}(s) to cart`);
+    toast.success(`Added ${qty} ${item.name}(s) to cart`);
   };
 
   return (

@@ -17,11 +17,14 @@ import AdminDashboard from './pages/AdminDashboard';
 
 import { CartProvider } from './context/CartContext';
 
+import { Toaster } from 'react-hot-toast';
+
 function App() {
   return (
     <AuthProvider>
       <CartProvider>
         <div className="min-h-screen bg-gray-50">
+          <Toaster position="top-right" />
           <Navbar />
           <main className="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
             <Routes>

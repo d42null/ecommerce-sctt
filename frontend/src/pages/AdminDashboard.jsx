@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import api from '../api/client';
 import { Pencil, Trash2, Plus, Save, X } from 'lucide-react';
+import toast from 'react-hot-toast';
 
 export default function AdminDashboard() {
   const [activeTab, setActiveTab] = useState('items'); // 'items' or 'users'
@@ -35,7 +36,7 @@ export default function AdminDashboard() {
       setNewItem(null);
       fetchItems();
     } catch (error) {
-      alert("Failed to save item");
+      toast.error("Failed to save item");
     }
   };
 
@@ -45,7 +46,7 @@ export default function AdminDashboard() {
       await api.delete(`/items/${id}`);
       fetchItems();
     } catch (error) {
-      alert("Failed to delete item");
+      toast.error("Failed to delete item");
     }
   };
   
