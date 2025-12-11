@@ -1,29 +1,12 @@
-import { useState, useEffect } from 'react';
-import api from '../api/client';
+import { useState } from 'react';
+import { useGetOrdersQuery } from '../store/api/apiSlice';
 import { ChevronDown, ChevronUp } from 'lucide-react';
 
 export default function Orders() {
-  const [orders, setOrders] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [expandedOrders, setExpandedOrders] = useState({});
+  const { data: orders = [], isLoading: loading } = useGetOrdersQuery(); // Default to empty array
+  const [expandedOrders, setExpandedOrders] = useState<Record<number, boolean>>({});
 
-  useEffect(() => {
-    fetchOrders();
-  }, []);
-
-  const fetchOrders = async () => {
-    try {
-      setLoading(true);
-      const response = await api.get('/orders');
-      setOrders(response.data);
-    } catch (error) {
-      console.error("Failed to fetch orders", error);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const toggleOrder = (orderId) => {
+  const toggleOrder = (orderId: number) => {
     setExpandedOrders(prev => ({
       ...prev,
       [orderId]: !prev[orderId]
@@ -31,13 +14,13 @@ export default function Orders() {
   };
 
   if (loading) return <div className="text-center py-10">Loading orders...</div>;
-  if (orders.length === 0) return <div className="text-center py-10">No orders found.</div>;
+  if (!orders || orders.length === 0) return <div className="text-center py-10">No orders found.</div>;
 
   return (
     <div className="px-4 py-6 sm:px-0">
       <h1 className="text-3xl font-bold text-gray-900 mb-8">Order History</h1>
       <div className="space-y-4">
-        {orders.map((order) => (
+        {orders.map((order: any) => ( // Using any here because backend structure might differ slightly from Order interface (e.g. amount vs total_amount)
           <div key={order.id} className="bg-white shadow overflow-hidden sm:rounded-lg border border-gray-200">
             <div 
               className="px-4 py-4 sm:px-6 flex justify-between items-center cursor-pointer hover:bg-gray-50 bg-gray-50"
@@ -62,7 +45,7 @@ export default function Orders() {
             {expandedOrders[order.id] && (
               <div className="border-t border-gray-200">
                 <ul className="divide-y divide-gray-200">
-                  {order.order_descriptions.map((desc) => (
+                  {order.order_descriptions.map((desc: any) => (
                     <li key={desc.id} className="px-4 py-3 flex items-center justify-between hover:bg-gray-50">
                       <div className="text-sm font-medium text-gray-900">
                         {desc.item.name}

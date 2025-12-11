@@ -1,17 +1,18 @@
 import { Link, useNavigate } from 'react-router-dom';
-import { useDispatch, useSelector } from 'react-redux';
-import { logoutUser } from '../store/slices/authSlice';
+import { useAppSelector } from '../store/hooks';
+import { useGetCurrentUserQuery, useLogoutMutation } from '../store/api/apiSlice';
 import { selectCartTotalItems } from '../store/slices/cartSlice';
-import { ShoppingCart, User, LogOut } from 'lucide-react';
+import { ShoppingCart, LogOut } from 'lucide-react';
 
 export default function Navbar() {
-  const dispatch = useDispatch();
-  const { user } = useSelector(state => state.auth);
-  const totalItems = useSelector(selectCartTotalItems);
+  const { data: user } = useGetCurrentUserQuery();
+  const [logout] = useLogoutMutation();
+  const totalItems = useAppSelector(selectCartTotalItems);
   const navigate = useNavigate();
 
-  const handleLogout = () => {
-    dispatch(logoutUser());
+  const handleLogout = async () => {
+    await logout().unwrap();
+    // Cache invalidation handles user data clearing, but we might want to ensure navigation happens after
     navigate('/login');
   };
 

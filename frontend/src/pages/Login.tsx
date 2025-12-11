@@ -1,23 +1,22 @@
 import { useState } from 'react';
-import { useDispatch } from 'react-redux';
-import { loginUser } from '../store/slices/authSlice';
+import { useLoginMutation } from '../store/api/apiSlice';
 import { useNavigate, Link } from 'react-router-dom';
 
 export default function Login() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const dispatch = useDispatch();
+  const [login] = useLoginMutation();
   const navigate = useNavigate();
   const [error, setError] = useState('');
 
-  const handleSubmit = async (e) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
       if (!email || !password) return setError("Please fill in all fields");
-      await dispatch(loginUser({ email, password })).unwrap();
+      await login({ email, password }).unwrap();
       navigate('/');
-    } catch (err) {
-      setError(typeof err === 'string' ? err : 'Invalid email or password');
+    } catch (err: any) {
+      setError(typeof err === 'string' ? err : (err?.data?.error || 'Invalid email or password'));
     }
   };
 

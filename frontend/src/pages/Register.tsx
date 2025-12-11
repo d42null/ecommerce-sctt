@@ -1,6 +1,5 @@
 import { useState } from 'react';
-import { useDispatch } from 'react-redux';
-import { registerUser } from '../store/slices/authSlice';
+import { useRegisterMutation } from '../store/api/apiSlice';
 import { useNavigate, Link } from 'react-router-dom';
 
 export default function Register() {
@@ -8,22 +7,21 @@ export default function Register() {
   const [password, setPassword] = useState('');
   const [firstName, setFirstName] = useState('');
   const [lastName, setLastName] = useState('');
-  const dispatch = useDispatch();
+  const [register] = useRegisterMutation();
   const navigate = useNavigate();
   const [error, setError] = useState('');
 
-  const handleSubmit = async (e) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
       if (!email || !password || !firstName || !lastName) return setError("All fields are required");
-      await dispatch(registerUser({ email, password, firstName, lastName })).unwrap();
+      await register({ email, password, firstName, lastName }).unwrap();
       navigate('/');
-    } catch (err) {
+    } catch (err: any) {
       console.error(err);
-      if (err.errors) {
-         // Thunk returns error data directly
-         const messages = Object.values(err.errors).flat().join(', ');
-         setError(messages);
+      if (err?.data?.errors) {
+         const messages = Object.values(err.data.errors).flat().join(', ');
+         setError(messages as string);
       } else {
          setError(typeof err === 'string' ? err : 'Registration failed');
       }

@@ -1,13 +1,14 @@
-import { useDispatch, useSelector } from 'react-redux';
+import { useAppDispatch, useAppSelector } from '../store/hooks';
 import { selectCartItems, removeFromCart, clearCart } from '../store/slices/cartSlice';
+import { useCreateOrderMutation } from '../store/api/apiSlice';
 import { useNavigate, Link } from 'react-router-dom';
-import api from '../api/client';
 import { Trash2 } from 'lucide-react';
 import toast from 'react-hot-toast';
 
 export default function Cart() {
-  const dispatch = useDispatch();
-  const cartItems = useSelector(selectCartItems);
+  const dispatch = useAppDispatch();
+  const cartItems = useAppSelector(selectCartItems);
+  const [createOrder] = useCreateOrderMutation();
   const navigate = useNavigate();
 
   const totalAmount = cartItems.reduce((acc, item) => acc + (parseFloat(item.price) * item.quantity), 0);
@@ -23,7 +24,7 @@ export default function Cart() {
         }))
       };
 
-      await api.post('/orders', payload);
+      await createOrder(payload).unwrap();
       dispatch(clearCart());
       toast.success('Order placed successfully!');
       navigate('/orders');

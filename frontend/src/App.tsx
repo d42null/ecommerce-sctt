@@ -11,18 +11,10 @@ import Orders from './pages/Orders';
 import AdminDashboard from './pages/AdminDashboard';
 
 import { Toaster } from 'react-hot-toast';
-
-import { useEffect } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
-import { checkAuth } from './store/slices/authSlice';
+import { useGetCurrentUserQuery } from './store/api/apiSlice';
 
 function App() {
-  const dispatch = useDispatch();
-  const { loading } = useSelector((state) => state.auth);
-
-  useEffect(() => {
-    dispatch(checkAuth());
-  }, [dispatch]);
+  const { isLoading: loading } = useGetCurrentUserQuery();
 
   if (loading) {
     return <div className="flex justify-center items-center h-screen">Loading...</div>;

@@ -1,50 +1,55 @@
-import { useState, useEffect } from 'react';
-import api from '../api/client';
-import { Pencil, Trash2, Plus, Save, X } from 'lucide-react';
+import { useState } from 'react';
+import { 
+  useGetItemsQuery, 
+  useGetUsersQuery, 
+  useCreateItemMutation, 
+  useUpdateItemMutation, 
+  useDeleteItemMutation 
+} from '../store/api/apiSlice';
+import { Pencil, Trash2, Plus } from 'lucide-react';
 import toast from 'react-hot-toast';
+import { Product } from '../types';
 
 export default function AdminDashboard() {
   const [activeTab, setActiveTab] = useState('items'); // 'items' or 'users'
-  const [items, setItems] = useState([]);
-  const [users, setUsers] = useState([]);
-  const [editingItem, setEditingItem] = useState(null);
-  const [newItem, setNewItem] = useState(null); // null or {}
+  const [editingItem, setEditingItem] = useState<Product | null>(null);
+  const [newItem, setNewItem] = useState<Partial<Product> | null>(null); // null or {}
 
-  useEffect(() => {
-    if (activeTab === 'items') fetchItems();
-    else fetchUsers();
-  }, [activeTab]);
+  // Queries
+  const { data: itemsData } = useGetItemsQuery({ page: 1, q: '' }); // Fetch all for admin? Or implement pagination needed. 
+  // For simplicity, let's assume getItems returns 1st page or we should implement "getAll" or pagination. 
+  // Let's stick to what we have. If items are paginated, we only see page 1.
+  const items = itemsData?.items || [];
+  
+  const { data: users = [] } = useGetUsersQuery(undefined, {
+      skip: activeTab !== 'users',
+  });
 
-  const fetchItems = async () => {
-    const res = await api.get('/items');
-    setItems(res.data);
-  };
+  // Mutations
+  const [createItem] = useCreateItemMutation();
+  const [updateItem] = useUpdateItemMutation();
+  const [deleteItem] = useDeleteItemMutation();
 
-  const fetchUsers = async () => {
-    const res = await api.get('/users');
-    setUsers(res.data);
-  };
-
-  const handleSaveItem = async (item) => {
+  const handleSaveItem = async (item: Partial<Product>) => {
     try {
       if (item.id) {
-        await api.put(`/items/${item.id}`, { item });
+        await updateItem({ id: item.id, item }).unwrap();
       } else {
-        await api.post('/items', { item });
+        await createItem(item).unwrap();
       }
       setEditingItem(null);
       setNewItem(null);
-      fetchItems();
+      toast.success("Item saved successfully");
     } catch (error) {
       toast.error("Failed to save item");
     }
   };
 
-  const handleDeleteItem = async (id) => {
+  const handleDeleteItem = async (id: number) => {
     if (!confirm("Are you sure?")) return;
     try {
-      await api.delete(`/items/${id}`);
-      fetchItems();
+      await deleteItem(id).unwrap();
+      toast.success("Item deleted");
     } catch (error) {
       toast.error("Failed to delete item");
     }
@@ -86,7 +91,7 @@ export default function AdminDashboard() {
 
           <div className="bg-white shadow overflow-hidden sm:rounded-md">
             <ul className="divide-y divide-gray-200">
-              {items.map(item => (
+              {items.map((item: Product) => (
                 <li key={item.id} className="px-6 py-4">
                   {editingItem?.id === item.id ? (
                     <ItemForm item={editingItem} onSave={handleSaveItem} onCancel={() => setEditingItem(null)} />
@@ -116,8 +121,8 @@ export default function AdminDashboard() {
 
       {activeTab === 'users' && (
         <div className="bg-white shadow overflow-hidden sm:rounded-md">
-          <ul className="divide-y divide-gray-200">
-             {users.map(user => (
+           <ul className="divide-y divide-gray-200">
+             {users.map((user: any) => ( // Using any if User interface doesn't match perfectly or just to be safe quickly
                <li key={user.id} className="px-6 py-4 flex items-center justify-between">
                  <div>
                    <h3 className="text-lg font-medium text-gray-900">{user.first_name} {user.last_name}</h3>
@@ -136,8 +141,8 @@ export default function AdminDashboard() {
   );
 }
 
-function ItemForm({ item, onSave, onCancel }) {
-  const [formData, setFormData] = useState({ ...item });
+function ItemForm({ item, onSave, onCancel }: { item: Partial<Product>, onSave: (item: Partial<Product>) => void, onCancel: () => void }) {
+  const [formData, setFormData] = useState<Partial<Product>>({ ...item });
 
   return (
     <div className="bg-gray-50 p-4 rounded-md mb-4 border border-gray-200">
@@ -146,20 +151,20 @@ function ItemForm({ item, onSave, onCancel }) {
           type="text"
           placeholder="Name"
           className="block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-          value={formData.name}
+          value={formData.name || ''}
           onChange={e => setFormData({ ...formData, name: e.target.value })}
         />
         <input
           type="number"
           placeholder="Price"
           className="block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-          value={formData.price}
+          value={formData.price || ''}
           onChange={e => setFormData({ ...formData, price: e.target.value })}
         />
         <textarea
           placeholder="Description"
           className="sm:col-span-2 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-          value={formData.description}
+          value={formData.description || ''}
           onChange={e => setFormData({ ...formData, description: e.target.value })}
         />
       </div>

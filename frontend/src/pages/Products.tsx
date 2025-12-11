@@ -1,53 +1,30 @@
-import { useState, useEffect } from 'react';
-import api from '../api/client';
-import { useDispatch } from 'react-redux';
+import { useState } from 'react';
+import { useGetItemsQuery } from '../store/api/apiSlice';
+import { useAppDispatch } from '../store/hooks';
 import { addToCart } from '../store/slices/cartSlice';
 import { Search, Plus, ChevronLeft, ChevronRight } from 'lucide-react';
 import toast from 'react-hot-toast';
+import { Product } from '../types';
 
 export default function Products() {
-  const [items, setItems] = useState([]);
-  const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState('');
   const [page, setPage] = useState(1);
-  const [totalPages, setTotalPages] = useState(1);
-  const dispatch = useDispatch();
-  const [quantities, setQuantities] = useState({});
+  const [quantities, setQuantities] = useState<Record<number, number>>({});
+  
+  const { data, isLoading: loading } = useGetItemsQuery({ page, q: searchQuery });
+  const items = data?.items || [];
+  const totalPages = data?.meta?.totalPages || 1;
 
-  useEffect(() => {
-    setPage(1); // Reset to page 1 on new search
-  }, [searchQuery]);
+  const dispatch = useAppDispatch();
 
-  useEffect(() => {
-    fetchItems();
-  }, [searchQuery, page]);
-
-  const fetchItems = async () => {
-    try {
-      setLoading(true);
-      const url = searchQuery
-        ? `/items?q=${searchQuery}&page=${page}`
-        : `/items?page=${page}`;
-      const response = await api.get(url);
-      setItems(response.data);
-      if (response.headers['total-pages']) {
-        setTotalPages(parseInt(response.headers['total-pages'], 10));
-      }
-    } catch (error) {
-      console.error("Failed to fetch items", error);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const handleQuantityChange = (itemId, value) => {
+  const handleQuantityChange = (itemId: number, value: string) => {
     const qty = parseInt(value);
     if (qty > 0) {
       setQuantities(prev => ({ ...prev, [itemId]: qty }));
     }
   };
 
-  const handleAddToCart = (item) => {
+  const handleAddToCart = (item: Product) => {
     const qty = quantities[item.id] || 1;
     dispatch(addToCart({ item, quantity: qty }));
     setQuantities(prev => ({ ...prev, [item.id]: 1 })); // Reset to 1
@@ -74,7 +51,7 @@ export default function Products() {
         <div className="text-center py-10">Loading products...</div>
       ) : (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-          {items.map((item) => (
+          {items.map((item: Product) => (
             <div key={item.id} className="bg-white overflow-hidden shadow rounded-lg border border-gray-200">
               <div className="p-5">
                 <h3 className="text-lg leading-6 font-medium text-gray-900">{item.name}</h3>
