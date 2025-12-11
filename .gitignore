@@ -16,6 +16,7 @@ backend/db/*.sqlite3
 backend/db/*.sqlite3-journal
 backend/.env
 backend/.env.*
+backend/vendor/bundle/
 
 # Node (Frontend)
 frontend/node_modules/
