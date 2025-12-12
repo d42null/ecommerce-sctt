@@ -19,7 +19,7 @@ export default function AdminDashboard() {
   // Queries
   const { data: itemsData } = useGetItemsQuery({ page, q: '' });
   const items = itemsData?.items || [];
-  const totalPages = itemsData?.totalPages || 1;
+  const totalPages = itemsData?.meta?.totalPages || 1;
   
   const { data: users = [] } = useGetUsersQuery(undefined, {
       skip: activeTab !== 'users',
