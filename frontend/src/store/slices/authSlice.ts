@@ -37,10 +37,12 @@ const authSlice = createSlice({
     builder.addMatcher(
       apiSlice.endpoints.login.matchFulfilled,
       (state, { payload }) => {
-        state.token = payload.token;
-        state.user = payload.user;
-        localStorage.setItem('token', payload.token);
-        localStorage.setItem('user', JSON.stringify(payload.user));
+        state.user = payload;
+        // Token is handled in apiSlice onQueryStarted, 
+        // but we can try to sync it here if needed, or just rely on localStorage.
+        // However, to be safe and reactive:
+        state.token = localStorage.getItem('token'); 
+        localStorage.setItem('user', JSON.stringify(payload));
       }
     );
     builder.addMatcher(
