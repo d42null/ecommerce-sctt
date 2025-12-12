@@ -1,12 +1,14 @@
 import { useState, useEffect } from 'react';
-import { useLoginMutation } from '../store/api/apiSlice';
+import { useLoginMutation, apiSlice } from '../store/api/apiSlice';
 import { useNavigate, Link } from 'react-router-dom';
+import { useDispatch } from 'react-redux';
 
 export default function Login() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [login] = useLoginMutation();
   const navigate = useNavigate();
+  const dispatch = useDispatch();
   const [error, setError] = useState('');
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -26,9 +28,11 @@ export default function Login() {
     const token = params.get('token');
     if (token) {
       localStorage.setItem('token', token);
+      // Force RTK Query to refetch the user state
+      dispatch(apiSlice.util.invalidateTags(['User']));
       navigate('/');
     }
-  }, [navigate]);
+  }, [navigate, dispatch]);
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
