@@ -113,7 +113,14 @@ export const apiSlice = createApi({
             url: '/users/sign_out',
             method: 'DELETE',
         }),
-        invalidatesTags: ['User', 'Order'], // Clear user data
+        async onQueryStarted(_arg, { dispatch, queryFulfilled }) {
+            try {
+                await queryFulfilled;
+                dispatch(apiSlice.util.resetApiState());
+            } catch {
+                // logout failed
+            }
+        },
     }),
 
     // Orders Endpoints
