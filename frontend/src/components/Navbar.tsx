@@ -1,4 +1,4 @@
-```javascript
+
 import { Link, useNavigate } from 'react-router-dom';
 import { useAppSelector, useAppDispatch } from '../store/hooks';
 import { useLogoutMutation } from '../store/api/apiSlice';
@@ -184,4 +184,4 @@ export default function Navbar() {
     </nav>
   );
 }
-```
+
