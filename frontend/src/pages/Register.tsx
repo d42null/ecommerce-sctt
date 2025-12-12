@@ -1,5 +1,5 @@
-import { useState } from 'react';
-import { useRegisterMutation } from '../store/api/apiSlice';
+import { useState, useEffect } from 'react';
+import { useRegisterMutation, useGetCurrentUserQuery } from '../store/api/apiSlice';
 import { useNavigate, Link } from 'react-router-dom';
 
 export default function Register() {
@@ -8,8 +8,16 @@ export default function Register() {
   const [firstName, setFirstName] = useState('');
   const [lastName, setLastName] = useState('');
   const [register] = useRegisterMutation();
+  const { data: user } = useGetCurrentUserQuery();
   const navigate = useNavigate();
   const [error, setError] = useState('');
+
+  // Redirect if already logged in
+  useEffect(() => {
+    if (user) {
+      navigate('/');
+    }
+  }, [user, navigate]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
