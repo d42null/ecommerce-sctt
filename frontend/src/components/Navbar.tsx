@@ -35,7 +35,7 @@ export default function Navbar() {
 
           {/* Desktop Menu */}
           <div className="hidden sm:flex sm:items-center sm:space-x-8">
-            {token ? (
+            {user ? (
               <>
                 <Link to="/" className="text-gray-700 hover:text-indigo-600 px-3 py-2 rounded-md text-sm font-medium">
                   Products
@@ -115,7 +115,7 @@ export default function Navbar() {
       {isMenuOpen && (
         <div className="sm:hidden">
           <div className="pt-2 pb-3 space-y-1">
-            {token ? (
+            {user ? (
               <>
                  <div className="flex items-center px-4 py-3 border-b border-gray-200 bg-gray-50">
                     {user?.avatar_url ? (
