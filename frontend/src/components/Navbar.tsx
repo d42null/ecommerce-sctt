@@ -7,7 +7,7 @@ import { ShoppingCart, User, LogOut, Package, Menu, X } from 'lucide-react';
 import { useState } from 'react';
 
 export default function Navbar() {
-  const { user, token } = useAppSelector((state) => state.auth);
+  const { user} = useAppSelector((state) => state.auth);
   const cartItems = useAppSelector((state) => state.cart.items);
   const [logout] = useLogoutMutation();
   const dispatch = useAppDispatch();
