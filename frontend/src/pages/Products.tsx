@@ -5,6 +5,7 @@ import { addToCart } from '../store/slices/cartSlice';
 import { Search, Plus, ChevronLeft, ChevronRight } from 'lucide-react';
 import toast from 'react-hot-toast';
 import { Product } from '../types';
+import Loader from '../components/Loader';
 
 export default function Products() {
   const [searchQuery, setSearchQuery] = useState('');
@@ -48,14 +49,23 @@ export default function Products() {
       </div>
 
       {loading ? (
-        <div className="text-center py-10">Loading products...</div>
+        <Loader />
       ) : (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
           {items.map((item: Product) => (
-            <div key={item.id} className="bg-white overflow-hidden shadow rounded-lg border border-gray-200">
-              <div className="p-5">
+            <div key={item.id} className="bg-white overflow-hidden shadow rounded-lg border border-gray-200 flex flex-col h-full">
+              <div className="h-48 w-full bg-gray-200 overflow-hidden relative">
+                 {item.image_url ? (
+                     <img src={item.image_url} alt={item.name} className="w-full h-full object-cover" />
+                 ) : (
+                     <div className="flex items-center justify-center h-full text-gray-400 bg-gray-100">
+                         <span className="text-xs">No Image</span>
+                     </div>
+                 )}
+              </div>
+              <div className="p-5 flex flex-col flex-1">
                 <h3 className="text-lg leading-6 font-medium text-gray-900">{item.name}</h3>
-                <p className="mt-1 text-sm text-gray-500 h-12 overflow-hidden">{item.description}</p>
+                <p className="mt-1 text-sm text-gray-500 h-12 overflow-hidden flex-1">{item.description}</p>
                 <div className="mt-4 flex items-baseline text-2xl font-semibold text-indigo-600">
                   ${parseFloat(item.price).toFixed(2)}
                 </div>

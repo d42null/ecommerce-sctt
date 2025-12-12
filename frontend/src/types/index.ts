@@ -4,6 +4,7 @@ export interface User {
   first_name: string;
   last_name: string;
   role: 'user' | 'admin';
+  avatar_url?: string;
 }
 
 export interface Product {

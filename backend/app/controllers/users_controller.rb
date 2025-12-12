@@ -29,7 +29,7 @@ class UsersController < ApplicationController
   private
 
   def user_params
-    permitted = [:first_name, :last_name, :email]
+    permitted = [:first_name, :last_name, :email, :avatar_url]
     permitted << :role if current_user.admin?
     params.require(:user).permit(*permitted)
   end

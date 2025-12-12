@@ -162,6 +162,15 @@ export const apiSlice = createApi({
         query: () => '/users',
         providesTags: ['User'],
     }),
+
+    updateUser: builder.mutation<User, Partial<User> & { id: number }>({
+        query: ({ id, ...patch }) => ({
+            url: `/users/${id}`,
+            method: 'PUT',
+            body: { user: patch },
+        }),
+        invalidatesTags: ['User'],
+    }),
   }),
 });
 
@@ -177,5 +186,6 @@ export const {
     useLogoutMutation,
     useGetOrdersQuery,
     useCreateOrderMutation,
-    useGetUsersQuery
+    useGetUsersQuery,
+    useUpdateUserMutation
 } = apiSlice;

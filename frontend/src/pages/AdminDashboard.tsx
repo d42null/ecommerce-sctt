@@ -4,11 +4,13 @@ import {
   useGetUsersQuery, 
   useCreateItemMutation, 
   useUpdateItemMutation, 
-  useDeleteItemMutation 
+  useDeleteItemMutation,
+  useUpdateUserMutation
 } from '../store/api/apiSlice';
-import { Pencil, Trash2, Plus, ChevronLeft, ChevronRight } from 'lucide-react';
+import { Pencil, Trash2, Plus, ChevronLeft, ChevronRight, UserCheck, UserX } from 'lucide-react';
 import toast from 'react-hot-toast';
-import { Product } from '../types';
+import { Product, User } from '../types';
+import Loader from '../components/Loader';
 
 export default function AdminDashboard() {
   const [activeTab, setActiveTab] = useState('items'); // 'items' or 'users'
@@ -17,11 +19,11 @@ export default function AdminDashboard() {
   const [page, setPage] = useState(1);
 
   // Queries
-  const { data: itemsData } = useGetItemsQuery({ page, q: '' });
+  const { data: itemsData, isLoading: itemsLoading } = useGetItemsQuery({ page, q: '' });
   const items = itemsData?.items || [];
   const totalPages = itemsData?.meta?.totalPages || 1;
   
-  const { data: users = [] } = useGetUsersQuery(undefined, {
+  const { data: users = [], isLoading: usersLoading } = useGetUsersQuery(undefined, {
       skip: activeTab !== 'users',
   });
 
@@ -29,6 +31,7 @@ export default function AdminDashboard() {
   const [createItem] = useCreateItemMutation();
   const [updateItem] = useUpdateItemMutation();
   const [deleteItem] = useDeleteItemMutation();
+  const [updateUser] = useUpdateUserMutation();
 
   const handleSaveItem = async (item: Partial<Product>) => {
     try {
@@ -55,6 +58,18 @@ export default function AdminDashboard() {
     }
   };
   
+  const handleToggleRole = async (user: User) => {
+      try {
+          const newRole = user.role === 'admin' ? 'user' : 'admin';
+          if (!confirm(`Are you sure you want to change role to ${newRole}?`)) return;
+          
+          await updateUser({ id: user.id, role: newRole }).unwrap();
+          toast.success(`User role updated to ${newRole}`);
+      } catch (error) {
+          toast.error("Failed to update role");
+      }
+  };
+  
   return (
     <div className="px-4 py-6 sm:px-0">
       <h1 className="text-3xl font-bold text-gray-900 mb-6">Admin Dashboard</h1>
@@ -79,7 +94,7 @@ export default function AdminDashboard() {
       {activeTab === 'items' && (
         <div>
           <button
-            onClick={() => setNewItem({ name: '', description: '', price: '' })}
+            onClick={() => setNewItem({ name: '', description: '', price: '', image_url: '' })}
             className="mb-4 inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-indigo-600 hover:bg-indigo-700"
           >
             <Plus className="h-4 w-4 mr-2" /> Add New Item
@@ -89,34 +104,39 @@ export default function AdminDashboard() {
             <ItemForm item={newItem} onSave={handleSaveItem} onCancel={() => setNewItem(null)} />
           )}
 
-          <div className="bg-white shadow overflow-hidden sm:rounded-md mb-6">
-            <ul className="divide-y divide-gray-200">
-              {items.map((item: Product) => (
-                <li key={item.id} className="px-6 py-4">
-                  {editingItem?.id === item.id ? (
-                    <ItemForm item={editingItem} onSave={handleSaveItem} onCancel={() => setEditingItem(null)} />
-                  ) : (
-                    <div className="flex items-center justify-between">
-                      <div>
-                        <h3 className="text-lg font-medium text-gray-900">{item.name}</h3>
-                        <p className="text-sm text-gray-500">{item.description}</p>
-                        <p className="text-sm font-bold text-indigo-600">${parseFloat(item.price).toFixed(2)}</p>
-                      </div>
-                      <div className="flex space-x-2">
-                        <button onClick={() => setEditingItem(item)} className="text-indigo-600 hover:text-indigo-900">
-                          <Pencil className="h-5 w-5" />
-                        </button>
-                        <button onClick={() => handleDeleteItem(item.id)} className="text-red-600 hover:text-red-900">
-                          <Trash2 className="h-5 w-5" />
-                        </button>
-                      </div>
-                    </div>
-                  )}
-                </li>
-              ))}
-            </ul>
-          </div>
-          
+          {itemsLoading ? <Loader /> : (
+            <>
+            <div className="bg-white shadow overflow-hidden sm:rounded-md mb-6">
+                <ul className="divide-y divide-gray-200">
+                {items.map((item: Product) => (
+                    <li key={item.id} className="px-6 py-4">
+                    {editingItem?.id === item.id ? (
+                        <ItemForm item={editingItem} onSave={handleSaveItem} onCancel={() => setEditingItem(null)} />
+                    ) : (
+                        <div className="flex items-center justify-between">
+                        <div className="flex items-center space-x-4">
+                            {item.image_url && <img src={item.image_url} alt={item.name} className="h-10 w-10 rounded-full object-cover" />}
+                            <div>
+                                <h3 className="text-lg font-medium text-gray-900">{item.name}</h3>
+                                <p className="text-sm text-gray-500">{item.description}</p>
+                                <p className="text-sm font-bold text-indigo-600">${parseFloat(item.price).toFixed(2)}</p>
+                            </div>
+                        </div>
+                        <div className="flex space-x-2">
+                            <button onClick={() => setEditingItem(item)} className="text-indigo-600 hover:text-indigo-900">
+                            <Pencil className="h-5 w-5" />
+                            </button>
+                            <button onClick={() => handleDeleteItem(item.id)} className="text-red-600 hover:text-red-900">
+                            <Trash2 className="h-5 w-5" />
+                            </button>
+                        </div>
+                        </div>
+                    )}
+                    </li>
+                ))}
+                </ul>
+            </div>
+            
             {/* Pagination Controls */}
             <div className="flex items-center justify-between border-t border-gray-200 bg-white px-4 py-3 sm:px-6">
                 <div className="flex flex-1 justify-between sm:hidden">
@@ -163,26 +183,37 @@ export default function AdminDashboard() {
                     </div>
                 </div>
             </div>
-
+          </>
+        )}
         </div>
       )}
 
       {activeTab === 'users' && (
         <div className="bg-white shadow overflow-hidden sm:rounded-md">
-           <ul className="divide-y divide-gray-200">
-             {users.map((user: any) => ( // Using any if User interface doesn't match perfectly or just to be safe quickly
-               <li key={user.id} className="px-6 py-4 flex items-center justify-between">
-                 <div>
-                   <h3 className="text-lg font-medium text-gray-900">{user.first_name} {user.last_name}</h3>
-                   <p className="text-sm text-gray-500">{user.email}</p>
-                   <span className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${user.role === 'admin' ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-800'}`}>
-                     {user.role}
-                   </span>
-                 </div>
-                 {/* Provide user editing if needed */}
-               </li>
-             ))}
-          </ul>
+           {usersLoading ? <Loader /> : (
+            <ul className="divide-y divide-gray-200">
+              {users.map((user: User) => (
+                <li key={user.id} className="px-6 py-4 flex items-center justify-between">
+                  <div>
+                    <h3 className="text-lg font-medium text-gray-900">{user.first_name} {user.last_name}</h3>
+                    <p className="text-sm text-gray-500">{user.email}</p>
+                    <span className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${user.role === 'admin' ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-800'}`}>
+                      {user.role}
+                    </span>
+                  </div>
+                  <div className="flex space-x-2">
+                       <button 
+                          onClick={() => handleToggleRole(user)} 
+                          className={`p-2 rounded-full hover:bg-gray-100 ${user.role === 'admin' ? 'text-red-500' : 'text-green-500'}`}
+                          title={user.role === 'admin' ? 'Revoke Admin' : 'Grant Admin'}
+                       >
+                           {user.role === 'admin' ? <UserX className="w-5 h-5"/> : <UserCheck className="w-5 h-5"/>}
+                       </button>
+                  </div>
+                </li>
+              ))}
+           </ul>
+           )}
         </div>
       )}
     </div>
@@ -208,6 +239,13 @@ function ItemForm({ item, onSave, onCancel }: { item: Partial<Product>, onSave: 
           className="block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
           value={formData.price || ''}
           onChange={e => setFormData({ ...formData, price: e.target.value })}
+        />
+        <input
+          type="text" // URL input
+          placeholder="Image URL"
+          className="block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+          value={formData.image_url || ''}
+          onChange={e => setFormData({ ...formData, image_url: e.target.value })}
         />
         <textarea
           placeholder="Description"
