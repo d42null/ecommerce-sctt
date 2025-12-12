@@ -2,7 +2,7 @@ Rails.application.routes.draw do
   mount Rswag::Api::Engine => '/api-docs'
   mount Rswag::Ui::Engine => '/api-docs'
   scope defaults: { format: :json } do
-    devise_for :users
+    devise_for :users, controllers: { omniauth_callbacks: 'users/omniauth_callbacks' }
     get 'current_user', to: 'users#current'
     resources :items
     resources :orders, only: [:index, :show, :create]

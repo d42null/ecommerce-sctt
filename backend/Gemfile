@@ -48,7 +48,13 @@ group :development, :test do
 
   # Omakase Ruby styling [https://github.com/rails/rubocop-rails-omakase/]
   gem "rubocop-rails-omakase", require: false
+  gem 'ruby-lsp', require: false
 end
 
 gem "rswag-api", "~> 2.17"
 gem "rswag-ui", "~> 2.17"
+
+gem "omniauth-google-oauth2", "~> 1.2"
+gem "omniauth-rails_csrf_protection", "~> 2.0"
+
+gem "dotenv-rails", "~> 3.2", groups: [:development, :test]
