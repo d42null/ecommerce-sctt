@@ -31,10 +31,9 @@ paths:
                       type: string
                     password_confirmation:
                       type: string
-                    first_name:
-                      type: string
-                    last_name:
-                      type: string
+                    first_name: {type: string}
+                    last_name: {type: string}
+                    avatar_url: {type: string}
       responses:
         '201':
           description: User created
@@ -112,6 +111,7 @@ paths:
                     name: {type: string}
                     description: {type: string}
                     price: {type: number}
+                    image_url: {type: string}
       responses:
         '201':
           description: Item created
@@ -169,6 +169,7 @@ paths:
                   type: object
                   properties:
                     role: {type: string}
+                    avatar_url: {type: string}
       responses:
         '200':
           description: User updated
