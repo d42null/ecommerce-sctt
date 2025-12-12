@@ -1,5 +1,4 @@
-# frozen_string_literal: true
-
+class Users::SessionsController < Devise::SessionsController
   respond_to :json
 
   private
@@ -20,3 +19,4 @@
       message: "logged out successfully"
     }, status: :ok
   end
+end
