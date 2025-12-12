@@ -1,3 +1,4 @@
+class User < ApplicationRecord
   include Devise::JWT::RevocationStrategies::JTIMatcher
 
   devise :database_authenticatable, :registerable,
@@ -11,9 +12,6 @@
       user.password = Devise.friendly_token[0, 20]
       user.first_name = auth.info.first_name || auth.info.name.split.first
       user.last_name = auth.info.last_name || auth.info.name.split.last
-      # If you are using confirmable and the provider(s) you use validate emails, 
-      # uncomment the line below to skip the confirmation emails.
-      # user.skip_confirmation!
     end
   end
          

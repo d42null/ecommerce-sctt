@@ -172,3 +172,13 @@ paths:
       responses:
         '200':
           description: User updated
+
+components:
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
+security:
+  - BearerAuth: []
