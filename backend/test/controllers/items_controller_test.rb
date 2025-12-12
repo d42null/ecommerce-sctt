@@ -20,14 +20,18 @@ class ItemsControllerTest < ActionDispatch::IntegrationTest
 
   test "should create item" do
     assert_difference("Item.count") do
-      post items_url, params: { item: { name: "New Item", description: "Desc", price: 10.0 } }
+      post items_url, params: { item: { name: "New Item", description: "Desc", price: 10.0, image_url: "http://example.com/image.png" } }
     end
     assert_response :success # or :created
+    assert_equal "http://example.com/image.png", Item.last.image_url
   end
 
   test "should update item" do
-    patch item_url(@item), params: { item: { name: "Updated" } }
+    patch item_url(@item), params: { item: { name: "Updated", image_url: "http://example.com/updated.png" } }
     assert_response :success
+    @item.reload
+    assert_equal "Updated", @item.name
+    assert_equal "http://example.com/updated.png", @item.image_url
   end
 
   test "should destroy item" do
