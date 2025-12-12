@@ -12,6 +12,7 @@ export interface Product {
   name: string;
   description: string;
   price: string; // From API it often comes as string due to decimal
+  image_url?: string;
 }
 
 export interface CartItem extends Product {
