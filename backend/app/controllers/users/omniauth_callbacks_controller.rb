@@ -8,7 +8,7 @@ class Users::OmniauthCallbacksController < Devise::OmniauthCallbacksController
       sign_in @user, event: :authentication
       
       # Generate JWT token
-      token, _payload = Warden::JWTAuth::UserEncoder.new.call(@user, :user, nil)
+      token = JwtService.encode(user_id: @user.id)
       
       frontend_url = ENV.fetch('FRONTEND_URL', 'http://localhost:5173')
       redirect_to "#{frontend_url}/login?token=#{token}", allow_other_host: true
