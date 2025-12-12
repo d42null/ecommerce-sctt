@@ -23,11 +23,27 @@ User.find_or_create_by!(email: 'user@example.com') do |u|
 end
 
 # Create Sample Items
-10.times do |i|
-  Item.find_or_create_by!(name: "Product #{i + 1}") do |item|
-    item.description = "Description for product #{i + 1}"
-    item.price = (i + 1) * 10.99
-  end
+OrderDescription.destroy_all
+Order.destroy_all
+Item.destroy_all
+puts "Old items and orders destroyed"
+
+images = [
+  "https://images.unsplash.com/photo-1523275335684-37898b6baf30?auto=format&fit=crop&w=300&q=80",
+  "https://images.unsplash.com/photo-1505740420928-5e560c06d30e?auto=format&fit=crop&w=300&q=80",
+  "https://images.unsplash.com/photo-1572635196237-14b3f281503f?auto=format&fit=crop&w=300&q=80",
+  "https://images.unsplash.com/photo-1542291026-7eec264c27ff?auto=format&fit=crop&w=300&q=80",
+  "https://images.unsplash.com/photo-1549298916-b41d501d3772?auto=format&fit=crop&w=300&q=80",
+  "https://images.unsplash.com/photo-1595950653106-6c9ebd614d3a?auto=format&fit=crop&w=300&q=80"
+]
+
+12.times do |i|
+  Item.create!(
+    name: "Premium Product #{i + 1}",
+    description: "Experience the quality of our premium product #{i + 1}. Perfect for daily use.",
+    price: (i + 1) * 15.99,
+    image_url: images[i % images.length]
+  )
 end
 
 puts "Seeding done!"
