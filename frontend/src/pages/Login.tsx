@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useLoginMutation } from '../store/api/apiSlice';
 import { useNavigate, Link } from 'react-router-dom';
 
@@ -19,6 +19,16 @@ export default function Login() {
       setError(typeof err === 'string' ? err : (err?.data?.error || 'Invalid email or password'));
     }
   };
+
+  // Check for JWT token in URL (from Google OAuth)
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    const token = params.get('token');
+    if (token) {
+      localStorage.setItem('token', token);
+      navigate('/');
+    }
+  }, [navigate]);
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">

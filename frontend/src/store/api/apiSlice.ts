@@ -6,12 +6,12 @@ export const apiSlice = createApi({
   reducerPath: 'api',
   baseQuery: fetchBaseQuery({ 
     baseUrl: import.meta.env.VITE_API_URL || 'http://localhost:3000',
-    credentials: 'include', // Important for Cookies!
+    credentials: 'include',
     prepareHeaders: (headers) => {
-        // Since we use httpOnly cookies for session/auth, we just need to ensure credentials are sent
-        // But if we had a token in state, we would attach it here.
-        // For cors credential, fetchBaseQuery handles it via 'include' credentials mode if configured (?)
-        // Actually fetchBaseQuery doesn't default credentials: 'include'.
+        const token = localStorage.getItem('token');
+        if (token) {
+            headers.set('Authorization', `Bearer ${token}`);
+        }
         return headers;
     },
   }),
@@ -23,11 +23,6 @@ export const apiSlice = createApi({
           url: `/items`,
           params: { page, q },
       }),
-      // Transform response to handle the headers metadata if needed, 
-      // OR better: Update backend to return meta in body?
-      // Since backend returns Array directly, getting headers is tricky in RTK Query standard `query` 
-      // without `transformResponse` having access to meta.
-      // BUT: RTK Query `transformResponse` receives (response, meta, arg).
       transformResponse: (response: Product[], meta, _arg) => {
         return {
           items: response,
@@ -89,6 +84,17 @@ export const apiSlice = createApi({
             method: 'POST',
             body: { user: credentials },
         }),
+        async onQueryStarted(_arg, { queryFulfilled }) {
+            try {
+                const { meta } = await queryFulfilled;
+                const token = meta?.response?.headers.get('Authorization');
+                if (token) {
+                    localStorage.setItem('token', token.split(' ')[1]);
+                }
+            } catch (err) {
+                 // error
+            }
+        },
         invalidatesTags: ['User'],
     }),
 
@@ -105,6 +111,17 @@ export const apiSlice = createApi({
                 } 
             },
         }),
+        async onQueryStarted(_arg, { queryFulfilled }) {
+            try {
+                const { meta } = await queryFulfilled;
+                const token = meta?.response?.headers.get('Authorization');
+                if (token) {
+                    localStorage.setItem('token', token.split(' ')[1]);
+                }
+            } catch (err) {
+                 // error
+            }
+        },
         invalidatesTags: ['User'],
     }),
 
@@ -116,9 +133,11 @@ export const apiSlice = createApi({
         async onQueryStarted(_arg, { dispatch, queryFulfilled }) {
             try {
                 await queryFulfilled;
+                localStorage.removeItem('token');
                 dispatch(apiSlice.util.resetApiState());
             } catch {
-                // logout failed
+                localStorage.removeItem('token'); // Clear anyway on error
+                dispatch(apiSlice.util.resetApiState());
             }
         },
     }),

@@ -6,7 +6,7 @@ import {
   useUpdateItemMutation, 
   useDeleteItemMutation 
 } from '../store/api/apiSlice';
-import { Pencil, Trash2, Plus } from 'lucide-react';
+import { Pencil, Trash2, Plus, ChevronLeft, ChevronRight } from 'lucide-react';
 import toast from 'react-hot-toast';
 import { Product } from '../types';
 
@@ -14,12 +14,12 @@ export default function AdminDashboard() {
   const [activeTab, setActiveTab] = useState('items'); // 'items' or 'users'
   const [editingItem, setEditingItem] = useState<Product | null>(null);
   const [newItem, setNewItem] = useState<Partial<Product> | null>(null); // null or {}
+  const [page, setPage] = useState(1);
 
   // Queries
-  const { data: itemsData } = useGetItemsQuery({ page: 1, q: '' }); // Fetch all for admin? Or implement pagination needed. 
-  // For simplicity, let's assume getItems returns 1st page or we should implement "getAll" or pagination. 
-  // Let's stick to what we have. If items are paginated, we only see page 1.
+  const { data: itemsData } = useGetItemsQuery({ page, q: '' });
   const items = itemsData?.items || [];
+  const totalPages = itemsData?.totalPages || 1;
   
   const { data: users = [] } = useGetUsersQuery(undefined, {
       skip: activeTab !== 'users',
@@ -89,7 +89,7 @@ export default function AdminDashboard() {
             <ItemForm item={newItem} onSave={handleSaveItem} onCancel={() => setNewItem(null)} />
           )}
 
-          <div className="bg-white shadow overflow-hidden sm:rounded-md">
+          <div className="bg-white shadow overflow-hidden sm:rounded-md mb-6">
             <ul className="divide-y divide-gray-200">
               {items.map((item: Product) => (
                 <li key={item.id} className="px-6 py-4">
@@ -116,6 +116,54 @@ export default function AdminDashboard() {
               ))}
             </ul>
           </div>
+          
+            {/* Pagination Controls */}
+            <div className="flex items-center justify-between border-t border-gray-200 bg-white px-4 py-3 sm:px-6">
+                <div className="flex flex-1 justify-between sm:hidden">
+                    <button
+                        onClick={() => setPage(p => Math.max(1, p - 1))}
+                        disabled={page === 1}
+                        className="relative inline-flex items-center rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50 disabled:opacity-50"
+                    >
+                        Previous
+                    </button>
+                    <button
+                        onClick={() => setPage(p => Math.min(totalPages, p + 1))}
+                        disabled={page === totalPages}
+                        className="relative ml-3 inline-flex items-center rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50 disabled:opacity-50"
+                    >
+                        Next
+                    </button>
+                </div>
+                <div className="hidden sm:flex sm:flex-1 sm:items-center sm:justify-between">
+                    <div>
+                        <p className="text-sm text-gray-700">
+                            Showing page <span className="font-medium">{page}</span> of <span className="font-medium">{totalPages}</span>
+                        </p>
+                    </div>
+                    <div>
+                        <nav className="isolate inline-flex -space-x-px rounded-md shadow-sm" aria-label="Pagination">
+                            <button
+                                onClick={() => setPage(p => Math.max(1, p - 1))}
+                                disabled={page === 1}
+                                className="relative inline-flex items-center rounded-l-md px-2 py-2 text-gray-400 ring-1 ring-inset ring-gray-300 hover:bg-gray-50 focus:z-20 focus:outline-offset-0 disabled:opacity-50"
+                            >
+                                <span className="sr-only">Previous</span>
+                                <ChevronLeft className="h-5 w-5" aria-hidden="true" />
+                            </button>
+                            <button
+                                onClick={() => setPage(p => Math.min(totalPages, p + 1))}
+                                disabled={page === totalPages}
+                                className="relative inline-flex items-center rounded-r-md px-2 py-2 text-gray-400 ring-1 ring-inset ring-gray-300 hover:bg-gray-50 focus:z-20 focus:outline-offset-0 disabled:opacity-50"
+                            >
+                                <span className="sr-only">Next</span>
+                                <ChevronRight className="h-5 w-5" aria-hidden="true" />
+                            </button>
+                        </nav>
+                    </div>
+                </div>
+            </div>
+
         </div>
       )}
 
