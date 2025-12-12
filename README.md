@@ -4,8 +4,8 @@ A full-stack e-commerce application built with React (Vite) and Ruby on Rails AP
 
 ## 🔗 Live Demo & API
 
-*   **Frontend (App)**: [INSERT_FRONTEND_URL_HERE](INSERT_FRONTEND_URL_HERE) - *Log in with credentials below*
-*   **Backend (Swagger API)**: [INSERT_BACKEND_URL_HERE/api-docs](INSERT_BACKEND_URL_HERE/api-docs)
+*   **Frontend (App)**: [https://ecommerce-sctt.vercel.app/](https://ecommerce-sctt.vercel.app/) - *Log in with credentials below*
+*   **Backend (Swagger API)**: [https://ecommerce-sctt.onrender.com/api-docs](https://ecommerce-sctt.onrender.com/api-docs)
 
 ## 🚀 Features
 
