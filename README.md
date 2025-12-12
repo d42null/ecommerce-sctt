@@ -2,6 +2,11 @@
 
 A full-stack e-commerce application built with React (Vite) and Ruby on Rails API.
 
+## 🔗 Live Demo & API
+
+*   **Frontend (App)**: [INSERT_FRONTEND_URL_HERE](INSERT_FRONTEND_URL_HERE) - *Log in with credentials below*
+*   **Backend (Swagger API)**: [INSERT_BACKEND_URL_HERE/api-docs](INSERT_BACKEND_URL_HERE/api-docs)
+
 ## 🚀 Features
 
 *   **Authentication**: JWT-based auth, Google OAuth integration.
