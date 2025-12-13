@@ -13,11 +13,20 @@ import AdminDashboard from './pages/AdminDashboard';
 import { Toaster } from 'react-hot-toast';
 import { useGetCurrentUserQuery } from './store/api/apiSlice';
 
+import Loader from './components/Loader';
+
 function App() {
   const { isLoading: loading } = useGetCurrentUserQuery();
 
   if (loading) {
-    return <div className="flex justify-center items-center h-screen">Loading...</div>;
+    return (
+      <div className="flex justify-center items-center h-screen bg-gray-50">
+        <div className="text-center">
+            <Loader size="large" />
+            <p className="mt-4 text-gray-500 text-lg font-medium animate-pulse">Starting E-Shop...</p>
+        </div>
+      </div>
+    );
   }
 
   return (
