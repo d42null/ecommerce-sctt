@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
-import { useLoginMutation, apiSlice, useGetCurrentUserQuery } from '../store/api/apiSlice';
+import { useLoginMutation, apiSlice } from '../store/api/apiSlice';
+import { useAppSelector } from '../store/hooks';
 import { useNavigate, Link } from 'react-router-dom';
 import { useDispatch } from 'react-redux';
 
@@ -7,7 +8,7 @@ export default function Login() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [login] = useLoginMutation();
-  const { data: user } = useGetCurrentUserQuery();
+  const { user } = useAppSelector((state) => state.auth);
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const [error, setError] = useState('');

@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
-import { useRegisterMutation, useGetCurrentUserQuery } from '../store/api/apiSlice';
+import { useRegisterMutation } from '../store/api/apiSlice';
+import { useAppSelector } from '../store/hooks';
 import { useNavigate, Link } from 'react-router-dom';
 
 export default function Register() {
@@ -8,7 +9,7 @@ export default function Register() {
   const [firstName, setFirstName] = useState('');
   const [lastName, setLastName] = useState('');
   const [register] = useRegisterMutation();
-  const { data: user } = useGetCurrentUserQuery();
+  const { user } = useAppSelector((state) => state.auth);
   const navigate = useNavigate();
   const [error, setError] = useState('');
 

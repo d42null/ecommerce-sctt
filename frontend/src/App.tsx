@@ -39,11 +39,7 @@ function App() {
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
           
-          <Route path="/" element={
-            <ProtectedRoute>
-              <Products />
-            </ProtectedRoute>
-          } />
+          <Route path="/" element={<Products />} />
           
           <Route path="/orders" element={
             <ProtectedRoute>
@@ -51,11 +47,7 @@ function App() {
             </ProtectedRoute>
           } />
 
-          <Route path="/cart" element={
-            <ProtectedRoute>
-              <Cart />
-            </ProtectedRoute>
-          } />
+          <Route path="/cart" element={<Cart />} />
 
           <Route path="/admin" element={
             <ProtectedRoute adminOnly={true}>
