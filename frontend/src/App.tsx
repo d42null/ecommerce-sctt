@@ -16,7 +16,8 @@ import { useGetCurrentUserQuery } from './store/api/apiSlice';
 import Loader from './components/Loader';
 
 function App() {
-  const { isLoading: loading } = useGetCurrentUserQuery();
+  const token = localStorage.getItem('token');
+  const { isLoading: loading } = useGetCurrentUserQuery(undefined, { skip: !token });
 
   if (loading) {
     return (
