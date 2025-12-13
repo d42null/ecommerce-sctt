@@ -5,9 +5,5 @@ set -e
 echo "Deployment: Starting database migrations..."
 ./bin/rails db:migrate
 
-echo "Deployment: Seeding database..."
-./bin/rails db:seed || echo "Seed failed (maybe already seeded), continuing..."
-
-echo "Deployment: Starting server..."
 # Запускаємо сервер
 exec ./bin/rails server -b 0.0.0.0
