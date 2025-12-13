@@ -3,7 +3,7 @@ import { useGetOrdersQuery } from '../store/api/apiSlice';
 import { ChevronDown, ChevronUp } from 'lucide-react';
 
 export default function Orders() {
-  const { data: orders = [], isLoading: loading } = useGetOrdersQuery(); // Default to empty array
+  const { data: orders = [], isLoading: loading, error } = useGetOrdersQuery(); 
   const [expandedOrders, setExpandedOrders] = useState<Record<number, boolean>>({});
 
   const toggleOrder = (orderId: number) => {
@@ -14,6 +14,7 @@ export default function Orders() {
   };
 
   if (loading) return <div className="text-center py-10">Loading orders...</div>;
+  if (error) return <div className="text-center py-10 text-red-500">Error loading orders. Please try again.</div>;
   if (!orders || orders.length === 0) return <div className="text-center py-10">No orders found.</div>;
 
   return (

@@ -1,20 +1,27 @@
 import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
 import { Product, Order, User } from '../../types';
 
-// Define a service using a base URL and expected endpoints
-export const apiSlice = createApi({
-  reducerPath: 'api',
-  baseQuery: fetchBaseQuery({ 
-    baseUrl: import.meta.env.VITE_API_URL || 'http://localhost:3000',
-    credentials: 'include',
-    prepareHeaders: (headers) => {
-        const token = localStorage.getItem('token');
-        if (token) {
-            headers.set('Authorization', `Bearer ${token}`);
-        }
-        return headers;
-    },
-  }),
+const baseQuery = fetchBaseQuery({
+  baseUrl: import.meta.env.VITE_API_URL || 'http://localhost:3000',
+  credentials: 'include',
+  prepareHeaders: (headers) => {
+      const token = localStorage.getItem('token');
+      if (token) {
+          headers.set('Authorization', `Bearer ${token}`);
+      }
+      return headers;
+  },
+});
+
+const baseQueryWithReauth = async (args: any, api: any, extraOptions: any) => {
+  let result = await baseQuery(args, api, extraOptions);
+  if (result.error && result.error.status === 401) {
+    // Dispatch logout action directly to avoid circular dependency
+    api.dispatch({ type: 'auth/logOut' });
+    api.dispatch(apiSlice.util.resetApiState());
+  }
+  return result;
+};
   tagTypes: ['Product', 'Order', 'User'],
   endpoints: (builder) => ({
     // Items Endpoints
