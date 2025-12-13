@@ -12,11 +12,11 @@ import AdminDashboard from './pages/AdminDashboard';
 
 import { Toaster } from 'react-hot-toast';
 import { useGetCurrentUserQuery } from './store/api/apiSlice';
-
+import { useAppSelector } from './store/hooks';
 import Loader from './components/Loader';
 
 function App() {
-  const token = localStorage.getItem('token');
+  const { token } = useAppSelector((state) => state.auth);
   const { isLoading: loading } = useGetCurrentUserQuery(undefined, { skip: !token });
 
   if (loading) {

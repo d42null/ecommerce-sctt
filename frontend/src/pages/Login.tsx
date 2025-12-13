@@ -3,6 +3,7 @@ import { useLoginMutation, apiSlice } from '../store/api/apiSlice';
 import { useAppSelector } from '../store/hooks';
 import { useNavigate, Link } from 'react-router-dom';
 import { useDispatch } from 'react-redux';
+import { setToken } from '../store/slices/authSlice';
 
 export default function Login() {
   const [email, setEmail] = useState('');
@@ -36,8 +37,7 @@ export default function Login() {
     const params = new URLSearchParams(window.location.search);
     const token = params.get('token');
     if (token) {
-      localStorage.setItem('token', token);
-      // Force RTK Query to refetch the user state
+      dispatch(setToken(token));
       dispatch(apiSlice.util.invalidateTags(['User']));
       navigate('/');
     }

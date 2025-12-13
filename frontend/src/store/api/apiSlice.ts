@@ -94,12 +94,16 @@ export const apiSlice = createApi({
             method: 'POST',
             body: { user: credentials },
         }),
-        async onQueryStarted(_arg, { queryFulfilled }) {
+        async onQueryStarted(_arg, { dispatch, queryFulfilled }) {
             try {
-                const { meta } = await queryFulfilled;
+                const { data, meta } = await queryFulfilled;
                 const token = meta?.response?.headers.get('Authorization');
                 if (token) {
-                    localStorage.setItem('token', token.split(' ')[1]);
+                    const splitToken = token.split(' ')[1];
+                    dispatch({ 
+                        type: 'auth/setCredentials', 
+                        payload: { user: data, token: splitToken } 
+                    });
                 }
             } catch (err) {
                  // error
@@ -121,12 +125,16 @@ export const apiSlice = createApi({
                 } 
             },
         }),
-        async onQueryStarted(_arg, { queryFulfilled }) {
+        async onQueryStarted(_arg, { dispatch, queryFulfilled }) {
             try {
-                const { meta } = await queryFulfilled;
+                const { data, meta } = await queryFulfilled;
                 const token = meta?.response?.headers.get('Authorization');
                 if (token) {
-                    localStorage.setItem('token', token.split(' ')[1]);
+                    const splitToken = token.split(' ')[1];
+                    dispatch({ 
+                        type: 'auth/setCredentials', 
+                        payload: { user: data, token: splitToken } 
+                    });
                 }
             } catch (err) {
                  // error

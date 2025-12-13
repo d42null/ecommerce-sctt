@@ -32,19 +32,13 @@ const authSlice = createSlice({
       localStorage.removeItem('user');
       localStorage.removeItem('token');
     },
+    setToken: (state, action: PayloadAction<string>) => {
+      state.token = action.payload;
+      localStorage.setItem('token', action.payload);
+    },
   },
   extraReducers: (builder) => {
-    builder.addMatcher(
-      apiSlice.endpoints.login.matchFulfilled,
-      (state, { payload }) => {
-        state.user = payload;
-        // Token is handled in apiSlice onQueryStarted, 
-        // but we can try to sync it here if needed, or just rely on localStorage.
-        // However, to be safe and reactive:
-        state.token = localStorage.getItem('token'); 
-        localStorage.setItem('user', JSON.stringify(payload));
-      }
-    );
+// Login handled via setCredentials dispatch from apiSlice
     builder.addMatcher(
       apiSlice.endpoints.logout.matchFulfilled,
       (state) => {
@@ -65,6 +59,6 @@ const authSlice = createSlice({
   },
 });
 
-export const { setCredentials, logOut } = authSlice.actions;
+export const { setCredentials, logOut, setToken } = authSlice.actions;
 
 export default authSlice.reducer;
