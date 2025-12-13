@@ -51,9 +51,9 @@ export default function Products() {
       {loading ? (
         <Loader />
       ) : (
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 animate-fade-in">
           {items.map((item: Product) => (
-            <div key={item.id} className="bg-white overflow-hidden shadow rounded-lg border border-gray-200 flex flex-col h-full">
+            <div key={item.id} className="bg-white overflow-hidden shadow rounded-lg border border-gray-200 flex flex-col h-full transform transition duration-300 hover:scale-[1.02] hover:shadow-xl">
               <div className="h-48 w-full bg-gray-200 overflow-hidden relative">
                  {item.image_url ? (
                      <img src={item.image_url} alt={item.name} className="w-full h-full object-cover" />
