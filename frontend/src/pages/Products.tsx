@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useGetItemsQuery } from '../store/api/apiSlice';
 import { useAppDispatch } from '../store/hooks';
 import { addToCart } from '../store/slices/cartSlice';
@@ -11,6 +11,11 @@ export default function Products() {
   const [searchQuery, setSearchQuery] = useState('');
   const [page, setPage] = useState(1);
   const [quantities, setQuantities] = useState<Record<number, number>>({});
+
+  // Reset page to 1 when search query changes
+  useEffect(() => {
+    setPage(1);
+  }, [searchQuery]);
   
   const { data, isLoading: loading } = useGetItemsQuery({ page, q: searchQuery });
   const items = data?.items || [];
